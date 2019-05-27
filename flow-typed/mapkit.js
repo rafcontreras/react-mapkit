@@ -258,7 +258,7 @@ declare module 'mapkit' {
     isScrollEnabled: boolean;
     isZoomEnabled: boolean;
 
-    addEventListener?: () => void;
+    addEventListener: (string: string, callback: Function) => void;
 
     center: Coordinate;
     setCenterAnimated: (Coordinate, ?boolean) => void;

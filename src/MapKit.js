@@ -183,38 +183,44 @@ export default class MapKit extends React.Component<Props, State> {
         console.warn(e.message)
       }
     } else {
-      let mapCenter = this.createCoordinate(0, 0)
-      let mapSpan
-
-      if (defaultCenter) {
-        try {
-          mapCenter = this.createCoordinate(defaultCenter[0], defaultCenter[1])
-        } catch (e) {
-          console.warn(e.message)
-        }
-
-        if (defaultSpan) {
-          try {
-            mapSpan = this.createCoordinateSpan(defaultSpan[0], defaultSpan[1])
-          } catch (e) {
-            console.warn(e.message)
-          }
-        }
-
-        if (mapSpan) {
-          // if we have a span we'll set a region
-          this.map.region = this.createCoordinateRegion(mapCenter, mapSpan)
-        } else {
-          // otherwise we just set the center
-          this.map.center = mapCenter
-        }
-      }
+      this.buildRegion(defaultCenter, defaultSpan)
     }
 
     // Set Other Props
     this.updateMapProps(props)
 
     this.setState({ mapKitIsReady: true })
+  }
+
+  buildRegion = (center, span) => {
+    let mapCenter = this.createCoordinate(0, 0)
+    let mapSpan
+
+    if (center) {
+      try {
+        mapCenter = this.createCoordinate(center[0], center[1])
+        // console.log("mapCenter", mapCenter)
+      } catch (e) {
+        console.warn(e.message)
+      }
+
+      if (span) {
+        try {
+          mapSpan = this.createCoordinateSpan(span[0], span[1])
+          // console.log("mapSpan", mapSpan)
+        } catch (e) {
+          console.warn(e.message)
+        }
+      }
+
+      if (mapSpan) {
+        // if we have a span we'll set a region
+        this.map.region = this.createCoordinateRegion(mapCenter, mapSpan)
+      } else {
+        // otherwise we just set the center
+        this.map.center = mapCenter
+      }
+    }
   }
 
   updateMapProps = (props: Props) => {
@@ -233,6 +239,9 @@ export default class MapKit extends React.Component<Props, State> {
     this.map.isZoomEnabled = props.isZoomEnabled
     this.map.showsUserLocation = props.showsUserLocation
     this.map.tracksUserLocation = props.tracksUserLocation
+    if (props.defaultCenter || props.defaultSpan) {
+      this.buildRegion(props.defaultCenter, props.defaultSpan)
+    }
   }
 
   createPadding = (padding: PaddingType) => {
@@ -301,6 +310,13 @@ export default class MapKit extends React.Component<Props, State> {
       this.props.animateViewChange,
     )
   }
+
+  // setRegion = ([lat, lng]: NumberTuple) => {
+  //   this.map.setRegionAnimated(
+  //     this.createCoordinate(lat, lng),
+  //     this.props.animateViewChange,
+  //   )
+  // }
 
   render() {
     const {
