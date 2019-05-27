@@ -59,6 +59,7 @@ type Props = {
   // todo
   regionChangeStartEvent?: (event) => void,
   selectEvent?: (event) => void,
+  mapState?: (state) => void,
 
   // Overlays
   // todo
@@ -117,12 +118,6 @@ class MapKit extends Component<Props, State> {
     super(props)
 
     this.mapRef = React.createRef()
-
-    load(
-      'https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js',
-      () => this.initMap(props),
-      this,
-    )
   }
 
   initMap = (props: Props) => {
@@ -134,6 +129,7 @@ class MapKit extends Component<Props, State> {
       tokenOrCallback,
       regionChangeStartEvent,
       selectEvent,
+      mapState,
     } = props
     const isCallback = tokenOrCallback.includes('/')
 
@@ -191,11 +187,14 @@ class MapKit extends Component<Props, State> {
 
     // Set Other Props
     this.updateMapProps(props)
-
     this.setState({ mapKitIsReady: true })
+
+    if (mapState) {
+      mapState(this.map)
+    }
   }
 
-  buildRegion = (center, span) => {
+  buildRegion = (center: Array, span: Array) => {
     let mapCenter = this.createCoordinate(0, 0)
     let mapSpan
 
@@ -247,6 +246,9 @@ class MapKit extends Component<Props, State> {
     if (props.defaultCenter || props.defaultSpan) {
       this.buildRegion(props.defaultCenter, props.defaultSpan)
     }
+    if (props.mapState) {
+      props.mapState(this.map)
+    }
   }
 
   createPadding = (padding: PaddingType) => {
@@ -284,13 +286,6 @@ class MapKit extends Component<Props, State> {
   createMapRect = (x: number, y: number, width: number, height: number) => {
     return new mapkit.MapRect(x, y, width, height)
   }
-
-  componentWillUnmount() {
-    if (this.map) {
-      this.map.destroy()
-    }
-  }
-
   setRotation = (rotation: number) => {
     this.map.setRotationAnimated(rotation, this.props.animateRotationChange)
   }
@@ -309,20 +304,28 @@ class MapKit extends Component<Props, State> {
     )
   }
 
-  shouldComponentUpdate(nextProps: Props, nextState: State) {
-    // for a lot of prop changes we're just making calls to mapKit so we have no need to re-render
-    // let ComponentShouldUpdate = false
-    //
-    // // might be needed when we start adding markers, but for now not a thing we do
-    // if (this.state.mapKitIsReady != nextState.mapKitIsReady) {
-    //   ComponentShouldUpdate = true
-    // }
+  componentDidMount() {
+    load(
+      'https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js',
+      () => this.initMap(this.props),
+      this,
+    )
+  }
 
-    if (this.state.mapKitIsReady) {
+  shouldComponentUpdate(nextProps: Props) {
+    const { mapKitIsReady } = this.state
+
+    if (mapKitIsReady) {
       this.updateMapProps(nextProps)
     }
 
     return true
+  }
+
+  componentWillUnmount() {
+    if (this.map) {
+      this.map.destroy()
+    }
   }
 
   render() {
@@ -358,13 +361,15 @@ class MapKit extends Component<Props, State> {
       children,
       regionChangeStartEvent,
       selectEvent,
+      mapState,
       ...otherProps
     } = this.props
+    const { mapKitIsReady } = this.state
 
     return (
       <div ref={this.mapRef} {...otherProps}>
         <MapKitContext.Provider value={this.map}>
-          {this.state.mapKitIsReady &&
+          {mapKitIsReady &&
             (typeof children === 'function'
               ? children({
                   setRotation: this.setRotation,

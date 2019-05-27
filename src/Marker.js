@@ -1,6 +1,6 @@
 // @flow
 
-import * as React from 'react'
+import React, { Component } from 'react'
 import type MapKitType, {
   MarkerAnnotationConstructorOptions,
   Map,
@@ -20,7 +20,7 @@ type Props = {
   longitude: number,
 }
 
-class Marker extends React.Component<Props> {
+class Marker extends Component<Props> {
   marker: Annotation
 
   getMarkerConstructionProps = (props: Props) => {

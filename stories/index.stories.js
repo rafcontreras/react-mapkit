@@ -23,6 +23,7 @@ const sanFranciscoLandmarks = [
     title: 'Transamerica Pyramid',
     phone: '+1-415-983-5420',
     url: 'https://www.transamericapyramidcenter.com/',
+    area: 'San Francisco',
   },
   {
     latLong: {
@@ -32,6 +33,7 @@ const sanFranciscoLandmarks = [
     title: 'Ferry Building',
     phone: '+1 (415) 983-8030',
     url: 'https://www.ferrybuildingmarketplace.com',
+    area: 'San Francisco',
   },
   {
     latLong: {
@@ -41,6 +43,7 @@ const sanFranciscoLandmarks = [
     title: "Fisherman's Wharf",
     phone: '+1 (415) 673-3530',
     url: 'https://visitfishermanswharf.com',
+    area: 'San Francisco',
   },
 ]
 
@@ -212,6 +215,7 @@ storiesOf('MapKit', module)
         const {
           title,
           latLong: { lat, lon },
+          area,
           url,
         } = landmark
         return (
@@ -221,6 +225,7 @@ storiesOf('MapKit', module)
             latitude={lat}
             longitude={lon}
             title={title}
+            clusteringIdentifier={area}
             callout={{
               calloutElementForAnnotation: (annotation) => {
                 return calloutForLandmarkAnnotation(annotation, landmark)
