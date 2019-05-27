@@ -55,6 +55,8 @@ type Props = {
 
   // Annotations
   // todo
+  regionChangeStartEvent?: (event) => void,
+  selectEvent?: (event) => void,
 
   // Overlays
   // todo
@@ -121,17 +123,26 @@ export default class MapKit extends React.Component<Props, State> {
   }
 
   initMap = (props: Props) => {
-    const isCallback = props.tokenOrCallback.includes('/')
+    const {
+      defaultCenter,
+      defaultMapRect,
+      defaultRotation,
+      defaultSpan,
+      tokenOrCallback,
+      regionChangeStartEvent,
+      selectEvent,
+    } = props
+    const isCallback = tokenOrCallback.includes('/')
 
     // init mapkit
     mapkit.init({
       authorizationCallback: (done) => {
         if (isCallback) {
-          fetch(props.tokenOrCallback)
+          fetch(tokenOrCallback)
             .then((res) => res.text())
             .then(done)
         } else {
-          done(props.tokenOrCallback)
+          done(tokenOrCallback)
         }
       },
     })
@@ -146,15 +157,27 @@ export default class MapKit extends React.Component<Props, State> {
     //
     // radar: https://bugreport.apple.com/web/?problemID=41190232
 
-    if (props.defaultRotation) this.map.rotation = props.defaultRotation
+    if (defaultRotation) this.map.rotation = defaultRotation
 
-    if (props.defaultMapRect) {
+    if (regionChangeStartEvent) {
+      this.map.addEventListener('region-change-start', (event) => {
+        regionChangeStartEvent(event)
+      })
+    }
+
+    if (selectEvent) {
+      this.map.addEventListener('select', (event) => {
+        selectEvent(event)
+      })
+    }
+
+    if (defaultMapRect) {
       try {
         this.map.visibleMapRect = this.createMapRect(
-          props.defaultMapRect[0],
-          props.defaultMapRect[1],
-          props.defaultMapRect[2],
-          props.defaultMapRect[3],
+          defaultMapRect[0],
+          defaultMapRect[1],
+          defaultMapRect[2],
+          defaultMapRect[3],
         )
       } catch (e) {
         console.warn(e.message)
@@ -163,22 +186,16 @@ export default class MapKit extends React.Component<Props, State> {
       let mapCenter = this.createCoordinate(0, 0)
       let mapSpan
 
-      if (props.defaultCenter) {
+      if (defaultCenter) {
         try {
-          mapCenter = this.createCoordinate(
-            props.defaultCenter[0],
-            props.defaultCenter[1],
-          )
+          mapCenter = this.createCoordinate(defaultCenter[0], defaultCenter[1])
         } catch (e) {
           console.warn(e.message)
         }
 
-        if (props.defaultSpan) {
+        if (defaultSpan) {
           try {
-            mapSpan = this.createCoordinateSpan(
-              props.defaultSpan[0],
-              props.defaultSpan[1],
-            )
+            mapSpan = this.createCoordinateSpan(defaultSpan[0], defaultSpan[1])
           } catch (e) {
             console.warn(e.message)
           }
@@ -315,6 +332,8 @@ export default class MapKit extends React.Component<Props, State> {
       tracksUserLocation,
 
       children,
+      regionChangeStartEvent,
+      selectEvent,
       ...otherProps
     } = this.props
 

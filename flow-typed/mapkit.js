@@ -258,6 +258,8 @@ declare module 'mapkit' {
     isScrollEnabled: boolean;
     isZoomEnabled: boolean;
 
+    addEventListener?: () => void;
+
     center: Coordinate;
     setCenterAnimated: (Coordinate, ?boolean) => void;
 
@@ -343,6 +345,7 @@ declare module 'mapkit' {
     };
 
     init(MapKitInitOptions): void;
+    addEventListener(event: string, callback: Function): void;
     Map(parent?: string | HTMLElement, ?MapConstructorOptions): Map;
     Padding(PaddingOptions): Padding;
     Coordinate(latitude: number, longitude: number): Coordinate;
