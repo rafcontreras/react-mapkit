@@ -12,6 +12,62 @@ import {
 import devToken from '../devToken'
 import { MapKit, Marker } from '../src'
 
+import './index.css'
+
+const sanFranciscoLandmarks = [
+  {
+    latLong: {
+      lat: 37.7951315,
+      lon: -122.402986,
+    },
+    title: 'Transamerica Pyramid',
+    phone: '+1-415-983-5420',
+    url: 'https://www.transamericapyramidcenter.com/',
+  },
+  {
+    latLong: {
+      lat: 37.7954201,
+      lon: -122.39352,
+    },
+    title: 'Ferry Building',
+    phone: '+1 (415) 983-8030',
+    url: 'https://www.ferrybuildingmarketplace.com',
+  },
+  {
+    latLong: {
+      lat: 37.8083396,
+      lon: -122.415727,
+    },
+    title: "Fisherman's Wharf",
+    phone: '+1 (415) 673-3530',
+    url: 'https://visitfishermanswharf.com',
+  },
+]
+
+const CALLOUT_OFFSET = new DOMPoint(-148, -78)
+
+const calloutForLandmarkAnnotation = (annotation, landmark) => {
+  const div = document.createElement('div')
+  div.className = 'landmark'
+
+  const title = div.appendChild(document.createElement('h1'))
+  title.textContent = annotation.title
+
+  const section = div.appendChild(document.createElement('section'))
+
+  const phone = section.appendChild(document.createElement('p'))
+  phone.className = 'phone'
+  phone.textContent = landmark.phone
+
+  const link = section.appendChild(document.createElement('p'))
+  link.className = 'homepage'
+  const a = link.appendChild(document.createElement('a'))
+  a.href = landmark.url
+  a.textContent = 'website'
+
+  return div
+}
+
 storiesOf('MapKit', module)
   .add('Map Controls', () => (
     <MapKit
@@ -88,40 +144,40 @@ storiesOf('MapKit', module)
       </MapKit>
     )
   })
-  // .add('View (Center and Span)', () => (
-  //   <MapKit
-  //     style={{ width: '100vw', height: '100vh' }}
-  //     tokenOrCallback={devToken}
-  //     center={[
-  //       number('center latitude', 47.6063889),
-  //       number('center longitude', -122.3308333),
-  //     ]}
-  //     span={[
-  //       number('span latitude delta', 0.016),
-  //       number('span longitude delta', 0.016),
-  //     ]}
-  //     animateViewChange={boolean('animateViewChange', true)}
-  //   />
-  // ))
-  // .add('View (MapRect)', () => (
-  //   <MapKit
-  //     style={{ width: '100vw', height: '100vh' }}
-  //     tokenOrCallback={devToken}
-  //     mapRect={[
-  //       number('x', 0.155),
-  //       number('y', 0.345),
-  //       number('width', 0.03),
-  //       number('height', 0.04),
-  //     ]}
-  //     animateViewChange={boolean('animateViewChange', true)}
-  //   />
-  // ))
+  .add('View (Center and Span)', () => (
+    <MapKit
+      style={{ width: '100vw', height: '100vh' }}
+      tokenOrCallback={devToken}
+      defaultCenter={[
+        number('center latitude', 47.6063889),
+        number('center longitude', -122.3308333),
+      ]}
+      defaultSpan={[
+        number('span latitude delta', 0.016),
+        number('span longitude delta', 0.016),
+      ]}
+      animateViewChange={boolean('animateViewChange', true)}
+    />
+  ))
+  .add('View (MapRect)', () => (
+    <MapKit
+      style={{ width: '100vw', height: '100vh' }}
+      tokenOrCallback={devToken}
+      defaultMapRect={[
+        number('x', 0.155),
+        number('y', 0.345),
+        number('width', 0.03),
+        number('height', 0.04),
+      ]}
+      animateViewChange={boolean('animateViewChange', true)}
+    />
+  ))
   .add('Markers', () => (
     <MapKit
       style={{ width: '100vw', height: '100vh' }}
       tokenOrCallback={devToken}
-      center={[47.6063889, -122.3308333]}
-      span={[0.016, 0.016]}
+      defaultCenter={[47.6063889, -122.3308333]}
+      defaultSpan={[0.016, 0.016]}
     >
       <Marker
         latitude={number('marker latitune', 47.6063889)}
@@ -132,5 +188,42 @@ storiesOf('MapKit', module)
         color={text('color', '#ff5b40')}
         glyphColor={text('glyphColor', 'white')}
       />
+    </MapKit>
+  ))
+  .add('Marker Callout', () => (
+    <MapKit
+      style={{ width: '100vw', height: '100vh' }}
+      tokenOrCallback={devToken}
+      defaultCenter={[37.7951315, -122.402986]}
+      defaultSpan={[0.016, 0.016]}
+      selectEvent={(event) => console.log(event)}
+    >
+      {sanFranciscoLandmarks.map((landmark) => {
+        const {
+          title,
+          latLong: { lat, lon },
+          url,
+        } = landmark
+        return (
+          <Marker
+            key={lat}
+            glyphText={title.charAt(0)}
+            latitude={lat}
+            longitude={lon}
+            title={title}
+            callout={{
+              calloutElementForAnnotation: (annotation) => {
+                return calloutForLandmarkAnnotation(annotation, landmark)
+              },
+              calloutAnchorOffsetForAnnotation: (annotation, element) => {
+                return CALLOUT_OFFSET
+              },
+              calloutAppearanceAnimationForAnnotation: (annotation) => {
+                return 'scale-and-fadein .4s 0 1 normal cubic-bezier(0.4, 0, 0, 1.5)'
+              },
+            }}
+          />
+        )
+      })}
     </MapKit>
   ))
