@@ -1,6 +1,6 @@
 // @flow
 
-import * as React from 'react'
+import React, { Component } from 'react'
 import load from 'little-loader'
 
 import ErrorBoundry from './ErrorBoundry'
@@ -82,7 +82,7 @@ type State = {
 
 export const MapKitContext = React.createContext()
 
-export default class MapKit extends React.Component<Props, State> {
+class MapKit extends Component<Props, State> {
   mapRef: { current: null | HTMLDivElement }
   map: Map
 
@@ -120,13 +120,6 @@ export default class MapKit extends React.Component<Props, State> {
       () => this.initMap(props),
       this,
     )
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps !== this.props) {
-      console.log('changed')
-      this.updateMapProps(this.props)
-    }
   }
 
   initMap = (props: Props) => {
@@ -206,7 +199,6 @@ export default class MapKit extends React.Component<Props, State> {
     if (center) {
       try {
         mapCenter = this.createCoordinate(center[0], center[1])
-        // console.log("mapCenter", mapCenter)
       } catch (e) {
         console.warn(e.message)
       }
@@ -214,7 +206,6 @@ export default class MapKit extends React.Component<Props, State> {
       if (span) {
         try {
           mapSpan = this.createCoordinateSpan(span[0], span[1])
-          // console.log("mapSpan", mapSpan)
         } catch (e) {
           console.warn(e.message)
         }
@@ -235,38 +226,20 @@ export default class MapKit extends React.Component<Props, State> {
 
   updateMapProps = (props: Props) => {
     this.map.showsMapTypeControl = props.showsMapTypeControl
-      ? props.showsMapTypeControl
-      : true
-    this.map.mapType = props.mapType ? props.mapType : 'Standard'
+    this.map.mapType = props.mapType
     this.map.padding = this.createPadding(props.padding)
-    this.map.showsCompass = props.showsCompass ? props.showsCompass : true
+    this.map.showsCompass = props.showsCompass
     this.map.showsMapTypeControl = props.showsMapTypeControl
-      ? props.showsMapTypeControl
-      : true
     this.map.showsZoomControl = props.showsZoomControl
-      ? props.showsZoomControl
-      : true
     this.map.showsUserLocationControl = props.showsUserLocationControl
-      ? props.showsUserLocation
-      : false
     this.map.showsPointsOfInterest = props.showsPointsOfInterest
-      ? props.showsPointsOfInterest
-      : true
-    this.map.showsScale = props.showsScale ? props.showsScale : false
-    this.map.tintColor = props.tintColor ? props.tintColor : ''
+    this.map.showsScale = props.showsScale
+    this.map.tintColor = props.tintColor
     this.map.isRotationEnabled = props.isRotationEnabled
-      ? props.isRotationEnabled
-      : true
     this.map.isScrollEnabled = props.isScrollEnabled
-      ? props.isScrollEnabled
-      : true
-    this.map.isZoomEnabled = props.isZoomEnabled ? props.isZoomEnabled : true
+    this.map.isZoomEnabled = props.isZoomEnabled
     this.map.showsUserLocation = props.showsUserLocation
-      ? props.showsUserLocation
-      : false
     this.map.tracksUserLocation = props.tracksUserLocation
-      ? props.tracksUserLocation
-      : false
     if (props.defaultCenter || props.defaultSpan) {
       this.buildRegion(props.defaultCenter, props.defaultSpan)
     }
@@ -308,14 +281,6 @@ export default class MapKit extends React.Component<Props, State> {
     return new mapkit.MapRect(x, y, width, height)
   }
 
-  shouldComponentUpdate(nextProps: Props, nextState: State) {
-    if (this.state.mapKitIsReady) {
-      return true
-    }
-
-    return false
-  }
-
   componentWillUnmount() {
     if (this.map) {
       this.map.destroy()
@@ -333,12 +298,28 @@ export default class MapKit extends React.Component<Props, State> {
     )
   }
 
-  // setRegion = ([lat, lng]: NumberTuple) => {
-  //   this.map.setRegionAnimated(
-  //     this.createCoordinate(lat, lng),
-  //     this.props.animateViewChange,
-  //   )
-  // }
+  setRegion = (center: Coordinate, span: CoordinateSpan) => {
+    this.map.setRegionAnimated(
+      this.createCoordinateRegion(center, span),
+      this.props.animateViewChange,
+    )
+  }
+
+  shouldComponentUpdate(nextProps: Props, nextState: State) {
+    // for a lot of prop changes we're just making calls to mapKit so we have no need to re-render
+    // let ComponentShouldUpdate = false
+    //
+    // // might be needed when we start adding markers, but for now not a thing we do
+    // if (this.state.mapKitIsReady != nextState.mapKitIsReady) {
+    //   ComponentShouldUpdate = true
+    // }
+
+    if (this.state.mapKitIsReady) {
+      this.updateMapProps(nextProps)
+    }
+
+    return true
+  }
 
   render() {
     const {
@@ -390,3 +371,5 @@ export default class MapKit extends React.Component<Props, State> {
     )
   }
 }
+
+export default MapKit

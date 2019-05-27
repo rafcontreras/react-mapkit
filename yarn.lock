@@ -439,6 +439,11 @@ app-root-path@^2.0.1:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-2.1.0.tgz#98bf6599327ecea199309866e8140368fd2e646a"
 
+apple-mapkit-js@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/apple-mapkit-js/-/apple-mapkit-js-6.0.1.tgz#953dc789c06b3a72314b34eb9e111ca03475fd99"
+  integrity sha512-N7y/zqK5fMKkbgWCIXOTTOw3XFkKH67Heq3O8BhZXibjK9QsvVpRVIP90S26poPPkPmiETqVkQ7UA8dW+wc6WQ==
+
 aproba@^1.0.3, aproba@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
