@@ -7,7 +7,12 @@ declare module 'mapkit' {
     | FeatureVisibilityAdaptive
     | FeatureVisibilityHidden
     | FeatureVisibilityVisible
-  declare export type MapType = 'hybrid' | 'satellite' | 'standard'
+  declare export type MapType =
+    | 'hybrid'
+    | 'satellite'
+    | 'standard'
+    | 'mutedStandard'
+  declare export type ColorScheme = 'light' | 'dark'
   declare export type PaddingOptions = {
     top?: number,
     right?: number,
@@ -64,6 +69,7 @@ declare module 'mapkit' {
     center?: Coordinate,
     rotation?: number,
     tintColor?: string,
+    colorScheme?: ColorScheme,
     mapType?: MapType,
     padding?: Padding,
     showsMapTypeControl?: boolean,
@@ -282,6 +288,7 @@ declare module 'mapkit' {
     showsPointsOfInterest: boolean;
     showsScale: FeatureVisibility;
     tintColor: ?string;
+    colorScheme: ?string;
 
     showItems: (
       Array<Annotation | Overlay>,

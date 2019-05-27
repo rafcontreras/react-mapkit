@@ -14,6 +14,7 @@ import type MapKitType, {
   CoordinateSpan,
   MapConstructorOptions,
   CoordinateRegion,
+  ColorScheme,
 } from 'mapkit'
 declare var mapkit: MapKitType
 
@@ -52,6 +53,7 @@ type Props = {
   showsPointsOfInterest: boolean,
   showsScale: FeatureVisibility,
   tintColor?: string,
+  colorScheme: ColorScheme,
 
   // Annotations
   // todo
@@ -88,6 +90,7 @@ class MapKit extends Component<Props, State> {
 
   static defaultProps = {
     mapType: 'standard',
+    colorScheme: 'light',
     padding: 0,
     showsCompass: 'adaptive',
     showsMapTypeControl: true,
@@ -235,6 +238,7 @@ class MapKit extends Component<Props, State> {
     this.map.showsPointsOfInterest = props.showsPointsOfInterest
     this.map.showsScale = props.showsScale
     this.map.tintColor = props.tintColor
+    this.map.colorScheme = props.colorScheme
     this.map.isRotationEnabled = props.isRotationEnabled
     this.map.isScrollEnabled = props.isScrollEnabled
     this.map.isZoomEnabled = props.isZoomEnabled
@@ -334,6 +338,7 @@ class MapKit extends Component<Props, State> {
       showsPointsOfInterest,
       showsScale,
       tintColor,
+      colorScheme,
 
       defaultCenter,
       defaultSpan,

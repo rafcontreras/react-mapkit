@@ -75,7 +75,12 @@ storiesOf('MapKit', module)
       tokenOrCallback={devToken}
       mapType={select(
         'mapType',
-        { standard: 'standard', satellite: 'satellite', hybrid: 'hybrid' },
+        {
+          standard: 'standard',
+          satellite: 'satellite',
+          hybrid: 'hybrid',
+          mutedStandard: 'mutedStandard',
+        },
         'standard',
       )}
       showsCompass={select(
@@ -91,6 +96,11 @@ storiesOf('MapKit', module)
         'showsScale',
         { adaptive: 'adaptive', hidden: 'hidden', visible: 'visible' },
         'hidden',
+      )}
+      colorScheme={select(
+        'colorScheme',
+        { light: 'light', dark: 'dark' },
+        'light',
       )}
       tintColor={text('tintColor', '')}
       isRotationEnabled={boolean('isRotationEnabled', true)}
