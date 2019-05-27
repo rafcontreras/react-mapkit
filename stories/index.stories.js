@@ -153,8 +153,8 @@ storiesOf('MapKit', module)
         number('center longitude', -122.3308333),
       ]}
       defaultSpan={[
-        number('span latitude delta', 0.016),
-        number('span longitude delta', 0.016),
+        number('span latitude delta', 1),
+        number('span longitude delta', 1),
       ]}
       animateViewChange={boolean('animateViewChange', true)}
     />

@@ -122,6 +122,13 @@ export default class MapKit extends React.Component<Props, State> {
     )
   }
 
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps !== this.props) {
+      console.log('changed')
+      this.updateMapProps(this.props)
+    }
+  }
+
   initMap = (props: Props) => {
     const {
       defaultCenter,
@@ -215,30 +222,51 @@ export default class MapKit extends React.Component<Props, State> {
 
       if (mapSpan) {
         // if we have a span we'll set a region
-        this.map.region = this.createCoordinateRegion(mapCenter, mapSpan)
+        this.map.setRegionAnimated(
+          this.createCoordinateRegion(mapCenter, mapSpan),
+          this.props.animateViewChange,
+        )
       } else {
         // otherwise we just set the center
-        this.map.center = mapCenter
+        this.map.setCenterAnimated(mapCenter, this.props.animateViewChange)
       }
     }
   }
 
   updateMapProps = (props: Props) => {
     this.map.showsMapTypeControl = props.showsMapTypeControl
-    this.map.mapType = props.mapType
+      ? props.showsMapTypeControl
+      : true
+    this.map.mapType = props.mapType ? props.mapType : 'Standard'
     this.map.padding = this.createPadding(props.padding)
-    this.map.showsCompass = props.showsCompass
+    this.map.showsCompass = props.showsCompass ? props.showsCompass : true
     this.map.showsMapTypeControl = props.showsMapTypeControl
+      ? props.showsMapTypeControl
+      : true
     this.map.showsZoomControl = props.showsZoomControl
+      ? props.showsZoomControl
+      : true
     this.map.showsUserLocationControl = props.showsUserLocationControl
+      ? props.showsUserLocation
+      : false
     this.map.showsPointsOfInterest = props.showsPointsOfInterest
-    this.map.showsScale = props.showsScale
-    this.map.tintColor = props.tintColor
+      ? props.showsPointsOfInterest
+      : true
+    this.map.showsScale = props.showsScale ? props.showsScale : false
+    this.map.tintColor = props.tintColor ? props.tintColor : ''
     this.map.isRotationEnabled = props.isRotationEnabled
+      ? props.isRotationEnabled
+      : true
     this.map.isScrollEnabled = props.isScrollEnabled
-    this.map.isZoomEnabled = props.isZoomEnabled
+      ? props.isScrollEnabled
+      : true
+    this.map.isZoomEnabled = props.isZoomEnabled ? props.isZoomEnabled : true
     this.map.showsUserLocation = props.showsUserLocation
+      ? props.showsUserLocation
+      : false
     this.map.tracksUserLocation = props.tracksUserLocation
+      ? props.tracksUserLocation
+      : false
     if (props.defaultCenter || props.defaultSpan) {
       this.buildRegion(props.defaultCenter, props.defaultSpan)
     }
@@ -281,23 +309,17 @@ export default class MapKit extends React.Component<Props, State> {
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State) {
-    // for a lot of prop changes we're just making calls to mapKit so we have no need to re-render
-    // let ComponentShouldUpdate = false
-    //
-    // // might be needed when we start adding markers, but for now not a thing we do
-    // if (this.state.mapKitIsReady != nextState.mapKitIsReady) {
-    //   ComponentShouldUpdate = true
-    // }
-
     if (this.state.mapKitIsReady) {
-      this.updateMapProps(nextProps)
+      return true
     }
 
-    return true
+    return false
   }
 
   componentWillUnmount() {
-    this.map.destroy()
+    if (this.map) {
+      this.map.destroy()
+    }
   }
 
   setRotation = (rotation: number) => {
