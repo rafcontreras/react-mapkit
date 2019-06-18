@@ -1,9 +1,8 @@
 /coverage
-/es
 /node_modules
-/umd
 npm-debug.log*
 .DS_Store
 /keygen/key.p8
 /devToken.js
+/devToken.js.rename
 /yarn-error.log
